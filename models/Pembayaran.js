@@ -18,6 +18,10 @@ export const pembayaran = database.define("pembayaran", {
     id_metode_bayar: {
         type: DataTypes.STRING
     },
+    bukti_bayar: {
+        type: DataTypes.STRING(512),
+        allowNull: true
+    },
     temp_key: {
             type: DataTypes.STRING
     }
@@ -46,6 +50,7 @@ export const get = async (req) => {
             p.tanggal_bayar,
             p.total_bayar,
             p.id_metode_bayar,
+            p.bukti_bayar,
             s.id_kamar,
             s.id_penyewa,
             k.nama AS nama_kamar,
@@ -97,6 +102,9 @@ export const get = async (req) => {
             idTagihan: item.id_tagihan,
             tanggalBayar: item.tanggal_bayar,
             totalBayar: item.total_bayar,
+            buktiBayar: item.bukti_bayar
+                ? `/uploads/${item.bukti_bayar}`
+                : null,
             metodeBayar: {
                 id: item.id_metode_bayar,
                 nama: item.nama_metode_bayar
@@ -146,6 +154,7 @@ export const show = async (id) => {
             p.tanggal_bayar,
             p.total_bayar,
             p.id_metode_bayar,
+            p.bukti_bayar,
             s.id_kamar,
             s.id_penyewa,
             k.nama AS nama_kamar,
@@ -190,6 +199,9 @@ export const show = async (id) => {
             idTagihan: item.id_tagihan,
             tanggalBayar: item.tanggal_bayar,
             totalBayar: item.total_bayar,
+            buktiBayar: item.bukti_bayar
+                ? `/uploads/${item.bukti_bayar}`
+                : null,
             metodeBayar: {
                 id: item.id_metode_bayar,
                 nama: item.nama_metode_bayar
@@ -207,4 +219,4 @@ export const show = async (id) => {
     } catch (error) {
         throw error
     }
-}     
+}

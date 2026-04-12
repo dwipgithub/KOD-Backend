@@ -1,7 +1,13 @@
-import { penyewa, get, show  } from "../models/Penyewa.js"
-import paginationDB from '../config/PaginationDB.js'
-import * as response from '../helpers/response.js'
-import { v4 as uuidv4 } from 'uuid'
+import { penyewa, get, show } from "../models/Penyewa.js"
+import paginationDB from "../config/PaginationDB.js"
+import * as response from "../helpers/response.js"
+import { v4 as uuidv4 } from "uuid"
+import fs from "fs/promises"
+import path from "path"
+import { fileURLToPath } from "url"
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const uploadsBase = path.join(__dirname, "..", "uploads")
 
 export const getPenyewa = async (req, res) => {
     try {
@@ -49,25 +55,35 @@ export const showPenyewa = async (req, res) => {
 export const createPenyewa = async (req, res) => {
     try {
         const uniqueKey = uuidv4()
+        const dokumenPath = `penyewa/${req.file.filename}`
 
-        await penyewa.create({
-            nama: req.body.nama,
-            alamat: req.body.alamat,
-            no_telp: req.body.noTelp,
-            email: req.body.email,
-            id_pengenal: req.body.idPengenal,
-            no_pengenal: req.body.noPengenal,
-            id_jenis_kelamin: req.body.idJenisKelamin,
-            id_status_pernikahan: req.body.idStatusPernikahan,
-            temp_key: uniqueKey
-        })
+        try {
+            await penyewa.create({
+                nama: req.body.nama,
+                alamat: req.body.alamat,
+                no_telp: req.body.noTelp,
+                email: req.body.email,
+                id_pengenal: req.body.idPengenal,
+                no_pengenal: req.body.noPengenal,
+                id_jenis_kelamin: req.body.idJenisKelamin,
+                id_status_pernikahan: req.body.idStatusPernikahan,
+                dokumen_pengenal: dokumenPath,
+                temp_key: uniqueKey
+            })
+        } catch (createErr) {
+            if (req.file?.path) {
+                await fs.unlink(req.file.path).catch(() => {})
+            }
+            throw createErr
+        }
 
         const data = await penyewa.findOne({
             where: { temp_key: uniqueKey }
         })
 
         return response.created(res, {
-            id: data.id
+            id: data.id,
+            dokumenPengenal: `/uploads/${dokumenPath}`
         })
     } catch (err) {
         console.log("Gagal menyimpan properti:", err)
@@ -89,7 +105,7 @@ export const updatePenyewa = async (req, res) => {
         // ======================
         // UPDATE DATA
         // ======================
-        const [affectedRows] = await penyewa.update({
+        const payload = {
             nama: req.body.nama,
             alamat: req.body.alamat,
             no_telp: req.body.noTelp,
@@ -98,9 +114,28 @@ export const updatePenyewa = async (req, res) => {
             no_pengenal: req.body.noPengenal,
             id_jenis_kelamin: req.body.idJenisKelamin,
             id_status_pernikahan: req.body.idStatusPernikahan
-        }, {
-            where: { id: req.params.id }
-        })
+        }
+
+        if (req.file) {
+            payload.dokumen_pengenal = `penyewa/${req.file.filename}`
+        }
+
+        let affectedRows = 0
+        try {
+            ;[affectedRows] = await penyewa.update(payload, {
+                where: { id: req.params.id }
+            })
+        } catch (updateErr) {
+            if (req.file?.path) {
+                await fs.unlink(req.file.path).catch(() => {})
+            }
+            throw updateErr
+        }
+
+        if (req.file && existing.dokumen_pengenal) {
+            const oldAbs = path.join(uploadsBase, existing.dokumen_pengenal)
+            await fs.unlink(oldAbs).catch(() => {})
+        }
 
         // ======================
         // TIDAK ADA PERUBAHAN

@@ -32,6 +32,10 @@ export const penyewa = database.define('penyewa', {
     },
     temp_key: {
         type: DataTypes.STRING
+    },
+    dokumen_pengenal: {
+        type: DataTypes.STRING(512),
+        allowNull: true
     }
 }, {
     freezeTableName: true,
@@ -63,7 +67,8 @@ export const get = async (req) => {
                 p.id_jenis_kelamin,
                 jk.nama AS jenis_kelamin_nama,
                 p.id_status_pernikahan,
-                sp.nama AS status_pernikahan_nama
+                sp.nama AS status_pernikahan_nama,
+                p.dokumen_pengenal
         `
 
         const sqlFrom = `
@@ -164,7 +169,10 @@ export const get = async (req) => {
             statusPernikahan: {
                 id: item.id_status_pernikahan,
                 nama: item.status_pernikahan_nama
-            }
+            },
+            dokumenPengenal: item.dokumen_pengenal
+                ? `/uploads/${item.dokumen_pengenal}`
+                : null
         }))
 
         // ======================
@@ -210,7 +218,8 @@ export const show = async (id) => {
                 p.id_jenis_kelamin,
                 jk.nama AS jenis_kelamin_nama,
                 p.id_status_pernikahan,
-                sp.nama AS status_pernikahan_nama
+                sp.nama AS status_pernikahan_nama,
+                p.dokumen_pengenal
         `
 
         const sqlFrom = `
@@ -264,7 +273,10 @@ export const show = async (id) => {
             statusPernikahan: {
                 id: item.id_status_pernikahan,
                 nama: item.status_pernikahan_nama
-            }
+            },
+            dokumenPengenal: item.dokumen_pengenal
+                ? `/uploads/${item.dokumen_pengenal}`
+                : null
         }
 
     } catch (error) {

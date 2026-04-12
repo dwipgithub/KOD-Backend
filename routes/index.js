@@ -6,9 +6,11 @@ import { verifyToken } from '../middleware/VerifyToken.js'
 import { getProperti, updateProperti, showProperti, createProperti } from '../controllers/PropertiController.js'
 import { getKamar, showKamar, createKamar, updateKamar } from '../controllers/KamarController.js'
 import { getPenyewa, showPenyewa, createPenyewa, updatePenyewa } from '../controllers/PenyewaController.js'
+import { penyewaDokumenUpload } from '../middleware/uploadPenyewaDokumen.js'
 import { getSewa, showSewa, createSewa } from '../controllers/SewaController.js'
 import { getTagihan, showTagihan, createTagihan } from '../controllers/TagihanController.js'
 import { createPembayaran, getPembayaran, showPembayaran } from '../controllers/PembayaranController.js'
+import { pembayaranBuktiUpload } from '../middleware/uploadPembayaranBukti.js'
 import { getProvinsi } from '../controllers/ProvinsiController.js'
 import { getKabKota, showKabKota } from '../controllers/KabKotaController.js'
 import { getKecamatan, showKecamatan } from '../controllers/KecamatanController.js'
@@ -67,8 +69,8 @@ router.get('/api/v1/status-kamar', verifyToken, getStatusKamar)
 // Penyewa
 router.get('/api/v1/penyewa', verifyToken, getPenyewa)
 router.get('/api/v1/penyewa/:id', verifyToken, showPenyewa)
-router.post('/api/v1/penyewa', verifyToken, createPenyewa)
-router.patch('/api/v1/penyewa/:id', verifyToken, updatePenyewa)
+router.post('/api/v1/penyewa', verifyToken, penyewaDokumenUpload({ requireFile: true }), createPenyewa)
+router.patch('/api/v1/penyewa/:id', verifyToken, penyewaDokumenUpload(), updatePenyewa)
 
 // Sewa
 router.get('/api/v1/sewa', verifyToken, getSewa)
@@ -83,6 +85,6 @@ router.post('/api/v1/tagihan', verifyToken, createTagihan)
 // Pembayaran
 router.get('/api/v1/pembayaran', verifyToken, getPembayaran)
 router.get('/api/v1/pembayaran/:id', verifyToken, showPembayaran)
-router.post('/api/v1/pembayaran', verifyToken, createPembayaran)
+router.post('/api/v1/pembayaran', verifyToken, pembayaranBuktiUpload, createPembayaran)
 
 export default router
