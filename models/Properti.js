@@ -69,11 +69,11 @@ export const get = async (req) => {
         `
 
         const sqlFrom = `
-            FROM kos.properti p
-            LEFT JOIN kos.provinsi prov ON prov.id = p.id_provinsi
-            LEFT JOIN kos.kab_kota kab ON kab.id = p.id_kab_kota
-            LEFT JOIN kos.kecamatan kec ON kec.id = p.id_kecamatan
-            LEFT JOIN kos.kelurahan kel ON kel.id = p.id_kelurahan
+            FROM KOS.properti p
+            LEFT JOIN KOS.provinsi prov ON prov.id = p.id_provinsi
+            LEFT JOIN KOS.kab_kota kab ON kab.id = p.id_kab_kota
+            LEFT JOIN KOS.kecamatan kec ON kec.id = p.id_kecamatan
+            LEFT JOIN KOS.kelurahan kel ON kel.id = p.id_kelurahan
         `
 
         const sqlOrder = ` ORDER BY p.nama `
@@ -158,19 +158,19 @@ export const get = async (req) => {
                         WHEN ss.id = 'BOOKED' THEN 'Sudah dipesan'
                         ELSE 'Tersedia'
                     END AS status_sewa_terbaru
-                FROM kos.kamar k
+                FROM KOS.kamar k
                 LEFT JOIN (
                     SELECT s1.*
-                    FROM kos.sewa s1
+                    FROM KOS.sewa s1
                     JOIN (
                         SELECT id_kamar, MAX(tanggal_masuk) AS max_masuk
-                        FROM kos.sewa
+                        FROM KOS.sewa
                         GROUP BY id_kamar
                     ) s2 
                     ON s1.id_kamar = s2.id_kamar 
                     AND s1.tanggal_masuk = s2.max_masuk
                 ) s ON k.id = s.id_kamar
-                LEFT JOIN kos.status_sewa ss ON s.id_status_sewa = ss.id
+                LEFT JOIN KOS.status_sewa ss ON s.id_status_sewa = ss.id
                 WHERE k.id_properti IN (?)
             `, {
                 replacements: [propertiIds],
@@ -233,11 +233,11 @@ export const get = async (req) => {
         // ======================
         const sqlCount = `
             SELECT COUNT(p.id) as total_row_count
-            FROM kos.properti p
-            LEFT JOIN kos.provinsi prov ON prov.id = p.id_provinsi
-            LEFT JOIN kos.kab_kota kab ON kab.id = p.id_kab_kota
-            LEFT JOIN kos.kecamatan kec ON kec.id = p.id_kecamatan
-            LEFT JOIN kos.kelurahan kel ON kel.id = p.id_kelurahan
+            FROM KOS.properti p
+            LEFT JOIN KOS.provinsi prov ON prov.id = p.id_provinsi
+            LEFT JOIN KOS.kab_kota kab ON kab.id = p.id_kab_kota
+            LEFT JOIN KOS.kecamatan kec ON kec.id = p.id_kecamatan
+            LEFT JOIN KOS.kelurahan kel ON kel.id = p.id_kelurahan
             ${sqlWhere}
         `
 
@@ -281,11 +281,11 @@ export const show = async (id) => {
         `
 
         const sqlFrom = `
-            FROM kos.properti p
-            LEFT JOIN kos.provinsi prov ON prov.id = p.id_provinsi
-            LEFT JOIN kos.kab_kota kab ON kab.id = p.id_kab_kota
-            LEFT JOIN kos.kecamatan kec ON kec.id = p.id_kecamatan
-            LEFT JOIN kos.kelurahan kel ON kel.id = p.id_kelurahan
+            FROM KOS.properti p
+            LEFT JOIN KOS.provinsi prov ON prov.id = p.id_provinsi
+            LEFT JOIN KOS.kab_kota kab ON kab.id = p.id_kab_kota
+            LEFT JOIN KOS.kecamatan kec ON kec.id = p.id_kecamatan
+            LEFT JOIN KOS.kelurahan kel ON kel.id = p.id_kelurahan
         `
 
         const sqlWhere = `
@@ -326,21 +326,21 @@ export const show = async (id) => {
                     ELSE 'Tersedia'
                 END AS status_sewa_terbaru
 
-            FROM kos.kamar k
+            FROM KOS.kamar k
 
             LEFT JOIN (
                 SELECT s1.*
-                FROM kos.sewa s1
+                FROM KOS.sewa s1
                 JOIN (
                     SELECT id_kamar, MAX(tanggal_masuk) AS max_masuk
-                    FROM kos.sewa
+                    FROM KOS.sewa
                     GROUP BY id_kamar
                 ) s2 
                 ON s1.id_kamar = s2.id_kamar 
                 AND s1.tanggal_masuk = s2.max_masuk
             ) s ON k.id = s.id_kamar
 
-            LEFT JOIN kos.status_sewa ss ON s.id_status_sewa = ss.id
+            LEFT JOIN KOS.status_sewa ss ON s.id_status_sewa = ss.id
 
             WHERE k.id_properti = ?
         `, {
