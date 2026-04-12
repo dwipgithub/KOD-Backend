@@ -72,10 +72,10 @@ export const get = async (req) => {
         `
 
         const sqlFrom = `
-            FROM kos.penyewa p
-            LEFT JOIN kos.pengenal pen ON p.id_pengenal = pen.id
-            LEFT JOIN kos.jenis_kelamin jk ON p.id_jenis_kelamin = jk.id
-            LEFT JOIN kos.status_pernikahan sp ON p.id_status_pernikahan = sp.id
+            FROM KOS.penyewa p
+            LEFT JOIN KOS.pengenal pen ON p.id_pengenal = pen.id
+            LEFT JOIN KOS.jenis_kelamin jk ON p.id_jenis_kelamin = jk.id
+            LEFT JOIN KOS.status_pernikahan sp ON p.id_status_pernikahan = sp.id
         `
 
         const sqlOrder = ` ORDER BY p.nama DESC `
@@ -180,7 +180,7 @@ export const get = async (req) => {
         // ======================
         const sqlCount = `
             SELECT COUNT(p.id) as total_row_count
-            FROM kos.penyewa p
+            FROM KOS.penyewa p
             ${sqlWhere}
         `
 
@@ -223,10 +223,10 @@ export const show = async (id) => {
         `
 
         const sqlFrom = `
-            FROM kos.penyewa p
-            LEFT JOIN kos.pengenal pen ON p.id_pengenal = pen.id
-            LEFT JOIN kos.jenis_kelamin jk ON p.id_jenis_kelamin = jk.id
-            LEFT JOIN kos.status_pernikahan sp ON p.id_status_pernikahan = sp.id
+            FROM KOS.penyewa p
+            LEFT JOIN KOS.pengenal pen ON p.id_pengenal = pen.id
+            LEFT JOIN KOS.jenis_kelamin jk ON p.id_jenis_kelamin = jk.id
+            LEFT JOIN KOS.status_pernikahan sp ON p.id_status_pernikahan = sp.id
         `
 
         const sqlWhere = `
