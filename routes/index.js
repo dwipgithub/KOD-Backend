@@ -19,6 +19,7 @@ import { getStatusKamar } from '../controllers/StatusKamarController.js'
 import { getPengenal } from '../controllers/Pengenal.js'
 import { getStatusPernikahan } from '../controllers/StatusPernikahanController.js'
 import { getJenisKelamin } from '../controllers/JenisKelaminController.js'
+import { servePrivateFile } from '../controllers/SecureFileController.js'
 
 const router = express.Router()
 
@@ -26,6 +27,9 @@ const router = express.Router()
 router.post('/api/v1/login', login)
 router.delete('/api/v1/logout', logout)
 router.get('/api/v1/token', refreshToken)
+
+// File privat (dokumen penyewa, bukti pembayaran) — wajib JWT, bukan static publik
+router.get('/api/v1/files/:folder/:filename', verifyToken, servePrivateFile)
 
 // Provinsi
 router.get('/api/v1/provinsi', verifyToken, getProvinsi)

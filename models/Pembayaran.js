@@ -1,5 +1,6 @@
 import { DataTypes, QueryTypes } from "sequelize"
 import { database } from "../config/Database.js"
+import { privateFileUrl } from "../helpers/privateFileUrl.js"
 
 export const pembayaran = database.define("pembayaran", {
     id: { 
@@ -102,9 +103,7 @@ export const get = async (req) => {
             idTagihan: item.id_tagihan,
             tanggalBayar: item.tanggal_bayar,
             totalBayar: item.total_bayar,
-            buktiBayar: item.bukti_bayar
-                ? `/uploads/${item.bukti_bayar}`
-                : null,
+            buktiBayar: privateFileUrl(item.bukti_bayar),
             metodeBayar: {
                 id: item.id_metode_bayar,
                 nama: item.nama_metode_bayar
@@ -199,9 +198,7 @@ export const show = async (id) => {
             idTagihan: item.id_tagihan,
             tanggalBayar: item.tanggal_bayar,
             totalBayar: item.total_bayar,
-            buktiBayar: item.bukti_bayar
-                ? `/uploads/${item.bukti_bayar}`
-                : null,
+            buktiBayar: privateFileUrl(item.bukti_bayar),
             metodeBayar: {
                 id: item.id_metode_bayar,
                 nama: item.nama_metode_bayar

@@ -3,6 +3,7 @@ import paginationDB from '../config/PaginationDB.js'
 import * as response from '../helpers/response.js'
 import { v4 as uuidv4 } from 'uuid'
 import fs from 'fs/promises'
+import { privateFileUrl } from '../helpers/privateFileUrl.js'
 
 export const createPembayaran = async (req, res) => {
     try {
@@ -34,7 +35,7 @@ export const createPembayaran = async (req, res) => {
             message: 'data created successfully',
             data: {
                 id: data.id,
-                buktiBayar: `/uploads/${buktiPath}`
+                buktiBayar: privateFileUrl(buktiPath)
             }
         })
     } catch (err) {

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid"
 import fs from "fs/promises"
 import path from "path"
 import { fileURLToPath } from "url"
+import { privateFileUrl } from "../helpers/privateFileUrl.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const uploadsBase = path.join(__dirname, "..", "uploads")
@@ -83,7 +84,7 @@ export const createPenyewa = async (req, res) => {
 
         return response.created(res, {
             id: data.id,
-            dokumenPengenal: `/uploads/${dokumenPath}`
+            dokumenPengenal: privateFileUrl(dokumenPath)
         })
     } catch (err) {
         console.log("Gagal menyimpan properti:", err)

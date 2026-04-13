@@ -97,7 +97,7 @@ export const updateProperti = async (req, res) => {
             alamat: req.body.alamat,
             catatan: req.body.catatan,
             id_provinsi: req.body.idProvinsi,
-            id_kabupaten: req.body.idKabupaten,
+            id_kab_kota: req.body.idKabKota,
             id_kecamatan: req.body.idKecamatan,
             id_kelurahan: req.body.idKelurahan
         }, {

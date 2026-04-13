@@ -5,10 +5,6 @@ import { database } from "./config/Database.js"
 import router from "./routes/index.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
-import path from "path"
-import { fileURLToPath } from "url"
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const app = express()
 
@@ -34,7 +30,6 @@ app.use(cors({
 
 app.use(cookieParser())
 app.use(express.json())
-app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 app.use(router)
 
 app.listen(5001, () => {

@@ -1,5 +1,6 @@
 import { DataTypes, QueryTypes } from "sequelize"
 import { database } from "../config/Database.js"
+import { privateFileUrl } from "../helpers/privateFileUrl.js"
 
 export const penyewa = database.define('penyewa', {
     id: {
@@ -170,9 +171,7 @@ export const get = async (req) => {
                 id: item.id_status_pernikahan,
                 nama: item.status_pernikahan_nama
             },
-            dokumenPengenal: item.dokumen_pengenal
-                ? `/uploads/${item.dokumen_pengenal}`
-                : null
+            dokumenPengenal: privateFileUrl(item.dokumen_pengenal)
         }))
 
         // ======================
@@ -274,9 +273,7 @@ export const show = async (id) => {
                 id: item.id_status_pernikahan,
                 nama: item.status_pernikahan_nama
             },
-            dokumenPengenal: item.dokumen_pengenal
-                ? `/uploads/${item.dokumen_pengenal}`
-                : null
+            dokumenPengenal: privateFileUrl(item.dokumen_pengenal)
         }
 
     } catch (error) {
