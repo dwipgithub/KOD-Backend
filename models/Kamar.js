@@ -92,7 +92,7 @@ export const get = async (req) => {
             LEFT JOIN kelurahan kel ON kel.id = p.id_kelurahan
 
             LEFT JOIN (
-                SELECT s1.*
+                SELECT s1.id_kamar, s1.tanggal_masuk, s1.id_status_sewa, s1.id_penyewa, s1.id AS id_sewa
                 FROM sewa s1
                 JOIN (
                     SELECT id_kamar, MAX(tanggal_masuk) AS max_masuk

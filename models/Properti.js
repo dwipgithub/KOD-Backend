@@ -160,7 +160,7 @@ export const get = async (req) => {
                     END AS status_sewa_terbaru
                 FROM KOS.kamar k
                 LEFT JOIN (
-                    SELECT s1.*
+                    SELECT s1.id_kamar, s1.tanggal_masuk, s1.id_status_sewa
                     FROM KOS.sewa s1
                     JOIN (
                         SELECT id_kamar, MAX(tanggal_masuk) AS max_masuk
