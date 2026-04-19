@@ -95,12 +95,16 @@ export const get = async (req) => {
                 SELECT s1.id_kamar, s1.tanggal_masuk, s1.id_status_sewa, s1.id_penyewa, s1.id AS id_sewa
                 FROM sewa s1
                 JOIN (
-                    SELECT id_kamar, MAX(tanggal_masuk) AS max_masuk
-                    FROM sewa
-                    GROUP BY id_kamar
+                    SELECT 
+                        id_kamar, 
+                        MAX(tanggal_dibuat) AS max_tanggal_dibuat
+                    FROM 
+                        sewa
+                    GROUP BY 
+                        id_kamar
                 ) s2 
                 ON s1.id_kamar = s2.id_kamar 
-                AND s1.tanggal_masuk = s2.max_masuk
+                AND s1.tanggal_dibuat = s2.max_tanggal_dibuat
             ) s ON k.id = s.id_kamar
             LEFT JOIN status_sewa ss ON s.id_status_sewa = ss.id
             LEFT JOIN penyewa py ON py.id = s.id_penyewa
@@ -266,15 +270,25 @@ export const show = async (id) => {
             LEFT JOIN kecamatan kec ON kec.id = p.id_kecamatan
             LEFT JOIN kelurahan kel ON kel.id = p.id_kelurahan
             LEFT JOIN (
-                SELECT s1.*
-                FROM sewa s1
+                SELECT
+                    s1.id,
+                    s1.id_kamar,
+                    s1.id_penyewa,
+                    s1.id_status_sewa,
+                    s1.tanggal_dibuat
+                FROM 
+                    sewa s1
                 JOIN (
-                    SELECT id_kamar, MAX(tanggal_masuk) AS max_masuk
-                    FROM sewa
-                    GROUP BY id_kamar
+                    SELECT 
+                        id_kamar, 
+                        MAX(tanggal_dibuat) AS max_tanggal_dibuat
+                    FROM 
+                        sewa
+                    GROUP BY 
+                        id_kamar
                 ) s2 
                 ON s1.id_kamar = s2.id_kamar 
-                AND s1.tanggal_masuk = s2.max_masuk
+                AND s1.tanggal_dibuat = s2.max_tanggal_dibuat
             ) s ON k.id = s.id_kamar
             LEFT JOIN penyewa py ON py.id = s.id_penyewa
             LEFT JOIN status_sewa ss ON s.id_status_sewa = ss.id
