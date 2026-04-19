@@ -31,6 +31,18 @@ export const penyewa = database.define('penyewa', {
     id_status_pernikahan: {
         type: DataTypes.STRING
     },
+    id_profesi: {
+        type: DataTypes.STRING
+    },
+    nama_institusi: {
+        type: DataTypes.STRING
+    },
+    alamat_institusi: {
+        type: DataTypes.STRING
+    },
+    no_telp_institusi: {
+        type: DataTypes.STRING
+    },
     temp_key: {
         type: DataTypes.STRING
     },
@@ -69,6 +81,11 @@ export const get = async (req) => {
                 jk.nama AS jenis_kelamin_nama,
                 p.id_status_pernikahan,
                 sp.nama AS status_pernikahan_nama,
+                p.id_profesi,
+                pr.nama AS profesi_nama,
+                p.nama_institusi,
+                p.alamat_institusi,
+                p.no_telp_institusi,
                 p.dokumen_pengenal
         `
 
@@ -77,6 +94,7 @@ export const get = async (req) => {
             LEFT JOIN KOS.pengenal pen ON p.id_pengenal = pen.id
             LEFT JOIN KOS.jenis_kelamin jk ON p.id_jenis_kelamin = jk.id
             LEFT JOIN KOS.status_pernikahan sp ON p.id_status_pernikahan = sp.id
+            LEFT JOIN KOS.profesi pr ON p.id_profesi = pr.id
         `
 
         const sqlOrder = ` ORDER BY p.nama DESC `
@@ -171,6 +189,15 @@ export const get = async (req) => {
                 id: item.id_status_pernikahan,
                 nama: item.status_pernikahan_nama
             },
+            profesi: {
+                id: item.id_profesi,
+                nama: item.profesi_nama
+            },
+            institusi: {
+                nama: item.nama_institusi,
+                alamat: item.alamat_institusi,
+                noTelp: item.no_telp_institusi
+            },
             dokumenPengenal: privateFileUrl(item.dokumen_pengenal)
         }))
 
@@ -218,6 +245,11 @@ export const show = async (id) => {
                 jk.nama AS jenis_kelamin_nama,
                 p.id_status_pernikahan,
                 sp.nama AS status_pernikahan_nama,
+                p.id_profesi,
+                pr.nama AS profesi_nama,
+                p.nama_institusi,
+                p.alamat_institusi,
+                p.no_telp_institusi,
                 p.dokumen_pengenal
         `
 
@@ -226,6 +258,7 @@ export const show = async (id) => {
             LEFT JOIN KOS.pengenal pen ON p.id_pengenal = pen.id
             LEFT JOIN KOS.jenis_kelamin jk ON p.id_jenis_kelamin = jk.id
             LEFT JOIN KOS.status_pernikahan sp ON p.id_status_pernikahan = sp.id
+            LEFT JOIN KOS.profesi pr ON p.id_profesi = pr.id
         `
 
         const sqlWhere = `
@@ -272,6 +305,15 @@ export const show = async (id) => {
             statusPernikahan: {
                 id: item.id_status_pernikahan,
                 nama: item.status_pernikahan_nama
+            },
+            profesi: {
+                id: item.id_profesi,
+                nama: item.profesi_nama
+            },
+            institusi: {
+                nama: item.nama_institusi,
+                alamat: item.alamat_institusi,
+                noTelp: item.no_telp_institusi
             },
             dokumenPengenal: privateFileUrl(item.dokumen_pengenal)
         }

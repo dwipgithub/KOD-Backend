@@ -3,6 +3,8 @@ import express from 'express'
 import { login, logout } from '../controllers/PenggunaController.js'
 import { refreshToken } from '../controllers/RefreshToken.js'
 import { verifyToken } from '../middleware/VerifyToken.js'
+import { decodeRouteIdParam } from '../middleware/DecodeRouteIdParam.js'
+import { decodeBodyFields } from '../middleware/DecodeBody.js'
 import { getProperti, updateProperti, showProperti, createProperti } from '../controllers/PropertiController.js'
 import { getKamar, showKamar, createKamar, updateKamar } from '../controllers/KamarController.js'
 import { getPenyewa, showPenyewa, createPenyewa, updatePenyewa } from '../controllers/PenyewaController.js'
@@ -20,6 +22,10 @@ import { getPengenal } from '../controllers/Pengenal.js'
 import { getStatusPernikahan } from '../controllers/StatusPernikahanController.js'
 import { getJenisKelamin } from '../controllers/JenisKelaminController.js'
 import { servePrivateFile } from '../controllers/SecureFileController.js'
+import { getProfesi, showProfesi, createProfesi } from '../controllers/ProfesiController.js'
+import { getInstitusi, showInstitusi, createInstitusi } from '../controllers/InstitusiController.js'
+import { createKeluar } from '../controllers/KeluarController.js'
+
 
 const router = express.Router()
 
@@ -49,6 +55,16 @@ router.get('/api/v1/kelurahan/:id', verifyToken, showKelurahan)
 // Jenis Kelamin
 router.get('/api/v1/jenis-kelamin', verifyToken, getJenisKelamin)
 
+// Profesi
+router.get('/api/v1/profesi', verifyToken, getProfesi)
+router.get('/api/v1/profesi/:id', verifyToken, showProfesi)
+router.post('/api/v1/profesi', verifyToken, createProfesi)
+
+// Institusi
+router.get('/api/v1/profesi', verifyToken, getInstitusi)
+router.get('/api/v1/profesi/:id', verifyToken, showInstitusi)
+router.post('/api/v1/profesi', verifyToken, createInstitusi)
+
 // Status Pernikahan
 router.get('/api/v1/status-pernikahan', verifyToken, getStatusPernikahan)
 
@@ -57,29 +73,29 @@ router.get('/api/v1/pengenal', verifyToken, getPengenal)
 
 // Properti
 router.get('/api/v1/properti', verifyToken, getProperti)
-router.get('/api/v1/properti/:id', verifyToken, showProperti)
+router.get('/api/v1/properti/:id', verifyToken, decodeRouteIdParam('id'), showProperti)
 router.post('/api/v1/properti', verifyToken, createProperti)
-router.patch('/api/v1/properti/:id', verifyToken, updateProperti)
+router.patch('/api/v1/properti/:id', verifyToken, decodeRouteIdParam('id'), updateProperti)
 
 // Kamar
 router.get('/api/v1/kamar', verifyToken, getKamar)
-router.get('/api/v1/kamar/:id', verifyToken, showKamar)
+router.get('/api/v1/kamar/:id', verifyToken, decodeRouteIdParam('id'), showKamar)
 router.post('/api/v1/kamar', verifyToken, createKamar)
-router.patch('/api/v1/kamar/:id', verifyToken, updateKamar)
+router.patch('/api/v1/kamar/:id', verifyToken, decodeRouteIdParam('id'), updateKamar)
 
 // Status Kamar
 router.get('/api/v1/status-kamar', verifyToken, getStatusKamar)
 
 // Penyewa
 router.get('/api/v1/penyewa', verifyToken, getPenyewa)
-router.get('/api/v1/penyewa/:id', verifyToken, showPenyewa)
+router.get('/api/v1/penyewa/:id', verifyToken, decodeRouteIdParam('id'), showPenyewa)
 router.post('/api/v1/penyewa', verifyToken, penyewaDokumenUpload({ requireFile: true }), createPenyewa)
-router.patch('/api/v1/penyewa/:id', verifyToken, penyewaDokumenUpload(), updatePenyewa)
+router.patch('/api/v1/penyewa/:id', verifyToken, decodeRouteIdParam('id'), penyewaDokumenUpload(), updatePenyewa)
 
 // Sewa
 router.get('/api/v1/sewa', verifyToken, getSewa)
 router.get('/api/v1/sewa/:id', verifyToken, showSewa)
-router.post('/api/v1/sewa', verifyToken, createSewa)
+router.post('/api/v1/sewa', verifyToken, decodeBodyFields(["idKamar"]), createSewa)
 
 // Tagihan
 router.get('/api/v1/tagihan', verifyToken, getTagihan)
@@ -90,5 +106,8 @@ router.post('/api/v1/tagihan', verifyToken, createTagihan)
 router.get('/api/v1/pembayaran', verifyToken, getPembayaran)
 router.get('/api/v1/pembayaran/:id', verifyToken, showPembayaran)
 router.post('/api/v1/pembayaran', verifyToken, pembayaranBuktiUpload, createPembayaran)
+
+// Keluar
+router.post('/api/v1/keluar', verifyToken, createKeluar)
 
 export default router

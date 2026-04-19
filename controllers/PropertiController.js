@@ -2,6 +2,7 @@ import { properti, get, show  } from "../models/Properti.js"
 import paginationDB from '../config/PaginationDB.js'
 import * as response from '../helpers/response.js'
 import { v4 as uuidv4 } from 'uuid'
+import { encodeRouteId } from "../helpers/routeId.js"
 
 export const getProperti = async (req, res) => {
     try {
@@ -19,10 +20,15 @@ export const getProperti = async (req, res) => {
         const message = results.data.length
             ? 'data found'
             : 'no data found'
+        
+        const dataWithRouteId = results.data.map((item) => ({
+            ...item,
+            routeId: encodeRouteId(item.id),
+        }))
 
         return response.success(
             res,
-            results.data,
+            dataWithRouteId,
             message,
             pagination
         )

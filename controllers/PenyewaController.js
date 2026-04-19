@@ -6,6 +6,7 @@ import fs from "fs/promises"
 import path from "path"
 import { fileURLToPath } from "url"
 import { privateFileUrl } from "../helpers/privateFileUrl.js"
+import { encodeRouteId } from "../helpers/routeId.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const uploadsBase = path.join(__dirname, "..", "uploads")
@@ -27,9 +28,14 @@ export const getPenyewa = async (req, res) => {
             ? 'data found'
             : 'no data found'
 
+        const dataWithRouteId = results.data.map((item) => ({
+            ...item,
+            routeId: encodeRouteId(item.id),
+        }))
+
         return response.success(
             res,
-            results.data,
+            dataWithRouteId,
             message,
             pagination
         )
@@ -68,6 +74,10 @@ export const createPenyewa = async (req, res) => {
                 no_pengenal: req.body.noPengenal,
                 id_jenis_kelamin: req.body.idJenisKelamin,
                 id_status_pernikahan: req.body.idStatusPernikahan,
+                id_profesi: req.body.idProfesi,
+                nama_institusi: req.body.namaInstitusi,
+                alamat_institusi: req.body.alamatInstitusi,
+                no_telp_institusi: req.body.noTelpInstitusi,
                 dokumen_pengenal: dokumenPath,
                 temp_key: uniqueKey
             })
@@ -114,7 +124,11 @@ export const updatePenyewa = async (req, res) => {
             id_pengenal: req.body.idPengenal,
             no_pengenal: req.body.noPengenal,
             id_jenis_kelamin: req.body.idJenisKelamin,
-            id_status_pernikahan: req.body.idStatusPernikahan
+            id_status_pernikahan: req.body.idStatusPernikahan,
+            id_profesi: req.body.idProfesi,
+            nama_institusi: req.body.namaInstitusi,
+            alamat_institusi: req.body.alamatInstitusi,
+            no_telp_institusi: req.body.noTelpInstitusi
         }
 
         if (req.file) {

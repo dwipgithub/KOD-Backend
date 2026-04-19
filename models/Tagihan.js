@@ -67,7 +67,15 @@ export const get = async (req) => {
             JOIN status_tagihan st ON t.id_status_tagihan = st.id
         `
 
-        const sqlOrder = ` ORDER BY t.tanggal_jatuh_tempo ASC `
+        const sqlOrder = ` 
+            ORDER BY 
+            CASE
+                WHEN t.id_deskripsi_tagihan = 'DP' THEN 1
+                WHEN t.id_deskripsi_tagihan = 'RENT' THEN 2
+                ELSE 99
+            END,
+            t.tanggal_jatuh_tempo ASC
+        `
         const sqlLimit = ` LIMIT ? OFFSET ? `
 
         // ======================

@@ -1,21 +1,20 @@
-import { get, keluar } from '../models/Keluar.js'
+import { get, show, institusi } from "../models/Institusi.js"
 import paginationDB from '../config/PaginationDB.js'
 import * as response from '../helpers/response.js'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from "uuid"
 
-export const createKeluar = async (req, res) => {
+export const createInstitusi = async (req, res) => {
     try {
         const uniqueKey = uuidv4()
 
-        await keluar.create({
-            id: uuidv4(),
-            id_sewa: req.body.idSewa,
-            tanggal_keluar: req.body.tanggalKeluar,
-            catatan: req.body.catatan,
+        await institusi.create({
+            nama: req.body.nama,
+            alamat: req.body.alamat,
+            no_telp: req.body.noTelp,
             temp_key: uniqueKey
         })
 
-        const data = await keluar.findOne({
+        const data = await profesi.findOne({
             where: { temp_key: uniqueKey }
         })
 
@@ -34,7 +33,7 @@ export const createKeluar = async (req, res) => {
     }
 }
 
-export const getKeluar = async (req, res) => {
+export const getInstitusi = async (req, res) => {
     try {
         const results = await get(req)
 
@@ -53,12 +52,27 @@ export const getKeluar = async (req, res) => {
 
         return response.success(
             res,
+            results.data,
             message,
-            pagination,
-            results.data
+            pagination
         )
 
     } catch (err) {
         return response.error(res, err, 422)
+    }
+}
+
+export const showInstitusi = async (req, res) => {
+    try {
+        const result = await show(req.params.id)
+
+        if (!result) {
+            return response.notFound(res, 'data not found')
+        }
+
+        return response.success(res, result, 'data found')
+
+    } catch (err) {
+        return response.error(res, err)
     }
 }

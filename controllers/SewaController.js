@@ -60,6 +60,7 @@ export const createSewa = async (req, res) => {
             id_durasi: req.body.idDurasi,
             harga_per_durasi: req.body.hargaPerDurasi,
             jumlah_durasi: req.body.jumlahDurasi,
+            uang_muka: req.body.uangMuka != null ? Number(req.body.uangMuka) : 0,
             catatan: req.body.catatan,
             temp_key: uniqueKey
         })

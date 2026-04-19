@@ -2,6 +2,7 @@ import { kamar, get, show  } from "../models/Kamar.js"
 import paginationDB from '../config/PaginationDB.js'
 import * as response from '../helpers/response.js'
 import { v4 as uuidv4 } from 'uuid'
+import { encodeRouteId } from "../helpers/routeId.js"
 
 export const getKamar = async (req, res) => {
     try {
@@ -20,9 +21,17 @@ export const getKamar = async (req, res) => {
             ? 'data found'
             : 'no data found'
 
+        const dataWithRouteId = results.data.map((item) => ({
+            ...item,
+            routeId: encodeRouteId(item.id),
+            routeIdPenyewa: item.sewa?.penyewa?.id
+                ? encodeRouteId(item.sewa.penyewa.id)
+                : null,
+        }))
+
         return response.success(
             res,
-            results.data,
+            dataWithRouteId,
             message,
             pagination
         )
@@ -33,13 +42,20 @@ export const getKamar = async (req, res) => {
 
 export const showKamar = async (req, res) => {
     try {
+        console.log(req.params.id)
         const result = await show(req.params.id)
 
         if (!result) {
             return response.notFound(res)
         }
 
-        return response.success(res, result, "data found")
+        return response.success(res, {
+            ...result,
+            routeId: encodeRouteId(result.id),
+            routeIdPenyewa: result.sewa?.penyewa?.id
+            ? encodeRouteId(result.sewa.penyewa.id)
+            : null,
+        }, "data found")
     } catch (err) {
         return response.error(res, err)
     }

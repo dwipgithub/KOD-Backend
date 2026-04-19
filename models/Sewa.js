@@ -30,6 +30,9 @@ export const sewa = database.define('sewa', {
     jumlah_durasi: {
         type: DataTypes.INTEGER
     },
+    uang_muka: {
+        type: DataTypes.DOUBLE
+    },
     catatan: {
         type: DataTypes.TEXT
     },
@@ -47,133 +50,6 @@ export const sewa = database.define('sewa', {
         }
     }
 })
-
-// export const get = async (req) => {
-//     try {
-//         const page = parseInt(req.query.page) || 1
-//         const limit = parseInt(req.query.limit) > 100 ? 100 : parseInt(req.query.limit) || 100
-//         const offset = (page - 1) * limit
-
-//         // ======================
-//         // SELECT
-//         // ======================
-//         const sqlSelect = `
-//             SELECT 
-//             s.id,
-//             s.id_kamar,
-//             k.nama AS kamar_nama,
-//             s.id_penyewa,
-//             p.nama AS penyewa_nama,
-//             s.tanggal_mulai,
-//             s.tanggal_keluar,
-//             s.id_durasi,
-//             d.nama AS durasi_nama,
-//             s.id_status_sewa,
-//             ss.nama AS status_sewa_nama,
-//             s.harga,
-//             s.catatan
-//         `
-
-//         const sqlFrom = `
-//             FROM sewa s
-//             JOIN kamar k ON s.id_kamar = k.id
-//             JOIN penyewa p ON s.id_penyewa = p.id
-//             JOIN durasi d ON s.id_durasi = d.id
-//             JOIN status_sewa ss ON s.id_status_sewa = ss.id
-//         `
-
-//         const sqlOrder = ` ORDER BY s.tanggal_dibuat DESC `
-//         const sqlLimit = ` LIMIT ? OFFSET ? `
-
-//         // ======================
-//         // FILTER
-//         // ======================
-//         const filters = []
-//         const replacements = []
-
-//         const { idKamar, idPenyewa, tanggalMulai, tanggalKeluar } = req.query
-
-//         if (idKamar) {
-//             filters.push('s.id_kamar = ?')
-//             replacements.push(idKamar)
-//         }
-
-//         if (idPenyewa) {
-//             filters.push('s.id_penyewa = ?')
-//             replacements.push(idPenyewa)
-//         }
-
-//         if (tanggalMulai) {
-//             filters.push('s.tanggal_mulai >= ?')
-//             replacements.push(tanggalMulai)
-//         }
-
-//         if (tanggalKeluar) {
-//             filters.push('s.tanggal_keluar <= ?')
-//             replacements.push(tanggalKeluar)
-//         }
-
-//         const sqlWhere = filters.length > 0 ? " WHERE " + filters.join(" AND ") : ""
-
-//         const sql = sqlSelect + sqlFrom + sqlWhere + sqlOrder + sqlLimit
-
-//         // ======================
-//         // QUERY DATA
-//         // ======================
-//         const rows = await database.query(sql, {
-//             type: QueryTypes.SELECT,
-//             replacements: [...replacements, limit, offset]
-//         })
-
-//         const formattedData = rows.map(item => ({
-//             id: item.id,
-//             kamar: {
-//                 id: item.id_kamar,
-//                 nama: item.kamar_nama
-//             },
-//             penyewa: {
-//                 id: item.id_penyewa,
-//                 nama: item.penyewa_nama
-//             },
-//             tanggalMulai: item.tanggal_mulai,
-//             tanggalKeluar: item.tanggal_keluar,
-//             durasi: {
-//                 id: item.id_durasi,
-//                 nama: item.durasi_nama
-//             },
-//             statusSewa: {
-//                 id: item.id_status_sewa,
-//                 nama: item.status_sewa_nama
-//             },
-//             harga: item.harga,
-//             catatan: item.catatan
-//         }))
-
-//         // ======================
-//         // QUERY COUNT
-//         // ======================
-//         const sqlCount = `
-//             SELECT COUNT(*) as total_row_count
-//             FROM sewa s
-//             ${sqlWhere}
-//         `
-
-//         const countResult = await database.query(sqlCount, {
-//             type: QueryTypes.SELECT,
-//             replacements: replacements
-//         })
-
-//         return {
-//             totalRowCount: countResult[0].total_row_count,
-//             page: page,
-//             limit: limit,
-//             data: formattedData
-//         }
-
-//     } catch (error) {
-//         throw error
-//     }
-// }
 
 export const get = async (req) => {
     try {
@@ -194,6 +70,7 @@ export const get = async (req) => {
             s.tanggal_masuk,
             s.tanggal_keluar,
             s.id_durasi,
+            s.uang_muka,
             d.nama AS durasi_nama,
             s.id_status_sewa,
             ss.nama AS status_sewa_nama,
@@ -367,6 +244,7 @@ export const show = async (id) => {
             s.id_status_sewa,
             ss.nama AS status_sewa_nama,
             s.harga_per_durasi,
+            s.uang_muka,
             s.catatan
         `
 
@@ -451,6 +329,7 @@ export const show = async (id) => {
                 nama: item.status_sewa_nama
             },
             hargaPerDurasi: item.harga_per_durasi,
+            uangMuka: item.uang_muka,
             catatan: item.catatan,
 
             // ✅ TAMBAHAN
