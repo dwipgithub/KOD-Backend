@@ -55,7 +55,7 @@ export function pembayaranBuktiUpload(req, res, next) {
         )
     }
 
-    return upload.any()(req, res, (err) => {
+    return upload.single('buktiBayar')(req, res, (err) => {
         if (err) {
             if (err instanceof multer.MulterError) {
                 if (err.code === "LIMIT_FILE_SIZE") {
@@ -71,8 +71,8 @@ export function pembayaranBuktiUpload(req, res, next) {
             }
             return response.error(res, err, 400)
         }
-        const files = req.files || []
-        req.file = files[0]
+        // const files = req.files || []
+        // req.file = files[0]
         if (!req.file) {
             return response.error(res, new Error("Bukti bayar wajib diunggah"), 400)
         }
