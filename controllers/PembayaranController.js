@@ -6,48 +6,44 @@ import fs from 'fs/promises'
 import { privateFileUrl } from '../helpers/privateFileUrl.js'
 
 export const createPembayaran = async (req, res) => {
+    try {
+        const uniqueKey = uuidv4()
+        const buktiPath = `pembayaran/${req.file.filename}`
 
-    return res.status(200).json({
-        test: 'POST pembayaran OK'
-    })
-    // try {
-    //     const uniqueKey = uuidv4()
-    //     const buktiPath = `pembayaran/${req.file.filename}`
+        try {
+            await pembayaran.create({
+                id_tagihan: req.body.idTagihan,
+                tanggal_bayar: req.body.tanggalBayar,
+                total_bayar: req.body.totalBayar,
+                id_metode_bayar: req.body.idMetodeBayar,
+                bukti_bayar: buktiPath,
+                temp_key: uniqueKey
+            })
+        } catch (createErr) {
+            if (req.file?.path) {
+                await fs.unlink(req.file.path).catch(() => {})
+            }
+            throw createErr
+        }
 
-    //     try {
-    //         await pembayaran.create({
-    //             id_tagihan: req.body.idTagihan,
-    //             tanggal_bayar: req.body.tanggalBayar,
-    //             total_bayar: req.body.totalBayar,
-    //             id_metode_bayar: req.body.idMetodeBayar,
-    //             bukti_bayar: buktiPath,
-    //             temp_key: uniqueKey
-    //         })
-    //     } catch (createErr) {
-    //         if (req.file?.path) {
-    //             await fs.unlink(req.file.path).catch(() => {})
-    //         }
-    //         throw createErr
-    //     }
+        const data = await pembayaran.findOne({
+            where: { temp_key: uniqueKey }
+        })
 
-    //     const data = await pembayaran.findOne({
-    //         where: { temp_key: uniqueKey }
-    //     })
-
-    //     res.status(200).send({
-    //         error: false,
-    //         message: 'data created successfully',
-    //         data: {
-    //             id: data.id,
-    //             buktiBayar: privateFileUrl(buktiPath)
-    //         }
-    //     })
-    // } catch (err) {
-    //     res.status(422).send({
-    //         error: true,
-    //         message: err.message
-    //     })
-    // }
+        res.status(200).send({
+            error: false,
+            message: 'data created successfully',
+            data: {
+                id: data.id,
+                buktiBayar: privateFileUrl(buktiPath)
+            }
+        })
+    } catch (err) {
+        res.status(422).send({
+            error: true,
+            message: err.message
+        })
+    }
 }
 
 export const getPembayaran = async(req, res) => {
