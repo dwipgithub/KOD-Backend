@@ -25,7 +25,7 @@ import { servePrivateFile } from '../controllers/SecureFileController.js'
 import { getProfesi, showProfesi, createProfesi } from '../controllers/ProfesiController.js'
 import { getInstitusi, showInstitusi, createInstitusi } from '../controllers/InstitusiController.js'
 import { createKeluar } from '../controllers/KeluarController.js'
-
+import { getLaporanArusKas } from '../controllers/LaporanArusKasController.js'
 
 const router = express.Router()
 
@@ -109,5 +109,8 @@ router.post('/api/v1/pembayaran', verifyToken, pembayaranBuktiUpload, createPemb
 
 // Keluar
 router.post('/api/v1/keluar', verifyToken, createKeluar)
+
+// Laporan
+router.get('/api/v1/laporan/arus-kas', verifyToken, getLaporanArusKas)
 
 export default router
