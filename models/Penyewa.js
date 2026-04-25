@@ -118,7 +118,7 @@ export const get = async (req) => {
         } = req.query
 
         if (nama) {
-            filters.push('p.nama ILIKE ?')
+            filters.push('p.nama LIKE ?')
             replacements.push(`%${nama}%`)
         }
 

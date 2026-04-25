@@ -26,6 +26,9 @@ import { getProfesi, showProfesi, createProfesi } from '../controllers/ProfesiCo
 import { getInstitusi, showInstitusi, createInstitusi } from '../controllers/InstitusiController.js'
 import { createKeluar } from '../controllers/KeluarController.js'
 import { getLaporanArusKas } from '../controllers/LaporanArusKasController.js'
+import { createPengeluaran, getPengeluaran, showPengeluaran } from '../controllers/PengeluaranController.js'
+import { getKategoriPengeluaran } from '../controllers/KategoriPengeluaranController.js'
+import { pengeluaranBuktiUpload } from '../middleware/uploadPengeluaranBukti.js'
 
 const router = express.Router()
 
@@ -109,6 +112,15 @@ router.post('/api/v1/pembayaran', verifyToken, pembayaranBuktiUpload, createPemb
 
 // Keluar
 router.post('/api/v1/keluar', verifyToken, createKeluar)
+
+// Kategori Pengeluaran
+router.get('/api/v1/kategori-pengeluaran', verifyToken, getKategoriPengeluaran)
+
+// Pengeluaran
+router.get('/api/v1/pengeluaran', verifyToken, getPengeluaran)
+router.get('/api/v1/pengeluaran/:id', verifyToken, showPengeluaran)
+router.post('/api/v1/pengeluaran', verifyToken, pengeluaranBuktiUpload, createPengeluaran)
+
 
 // Laporan
 router.get('/api/v1/laporan/arus-kas', verifyToken, getLaporanArusKas)

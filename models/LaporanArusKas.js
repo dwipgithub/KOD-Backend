@@ -1,6 +1,5 @@
-import { DataTypes, QueryTypes } from "sequelize"
+import { QueryTypes } from "sequelize"
 import { database } from "../config/Database.js"
-import { privateFileUrl } from "../helpers/privateFileUrl.js"
 
 export const get = async (req) => {
     try {
@@ -8,76 +7,103 @@ export const get = async (req) => {
         const limit = parseInt(req.query.limit) > 100 ? 100 : parseInt(req.query.limit) || 100
         const offset = (page - 1) * limit
 
-        // ======================
-        // SELECT
-        // ======================
-        const sqlSelect = `
-            SELECT 
-            p.id,
-            p.id_tagihan,
-            p.tanggal_bayar as tanggal_bayar,
-            p.total_bayar,
-            p.id_metode_bayar,
-            p.bukti_bayar,
-            s.id_kamar,
-            s.id_penyewa,
-            k.nama AS nama_kamar,
-            pi.id AS id_properti,
-            pi.nama AS nama_properti,
-            pe.nama AS nama_penyewa,
-            mb.nama AS nama_metode_bayar,
-            dt.id as id_deskripsi_tagihan,
-            dt.nama as nama_deskripsi_tagihan
-        `
+        const { id_tagihan, startDate, endDate } = req.query
 
-        const sqlFrom = `
-            FROM pembayaran p
-            JOIN tagihan t ON p.id_tagihan = t.id
-            JOIN deskripsi_tagihan dt ON t.id_deskripsi_tagihan = dt.id
-            JOIN sewa s ON t.id_sewa = s.id
-            JOIN kamar k ON s.id_kamar = k.id
-            JOIN properti pi ON k.id_properti = pi.id
-            JOIN penyewa pe ON s.id_penyewa = pe.id
-            JOIN metode_bayar mb ON p.id_metode_bayar = mb.id
-        `
-
-        const sqlOrder = ` ORDER BY p.tanggal_bayar DESC `
-        const sqlLimit = ' LIMIT ? '
-        const sqlOffset = ' OFFSET ? '
-
-        // ======================
-        // FILTER
-        // ======================
-        const filters = []
-        const replacements = []
-
-        const { id_tagihan,  startDate, endDate } = req.query
+        const pembayaranFilters = []
+        const pembayaranReplacements = []
+        const pengeluaranFilters = []
+        const pengeluaranReplacements = []
 
         if (id_tagihan) {
-            filters.push('p.id_tagihan = ?')
-            replacements.push(id_tagihan)
+            pembayaranFilters.push("p.id_tagihan = ?")
+            pembayaranReplacements.push(id_tagihan)
         }
 
-        // FILTER PERIODE ARUS KAS
         if (startDate && endDate) {
-            filters.push('DATE(p.tanggal_bayar) BETWEEN ? AND ?')
-            replacements.push(startDate, endDate)
+            pembayaranFilters.push("DATE(p.tanggal_bayar) BETWEEN ? AND ?")
+            pembayaranReplacements.push(startDate, endDate)
+            pengeluaranFilters.push("DATE(pg.tanggal_pengeluaran) BETWEEN ? AND ?")
+            pengeluaranReplacements.push(startDate, endDate)
         } else if (startDate) {
-            filters.push('DATE(p.tanggal_bayar) >= ?')
-            replacements.push(startDate)
+            pembayaranFilters.push("DATE(p.tanggal_bayar) >= ?")
+            pembayaranReplacements.push(startDate)
+            pengeluaranFilters.push("DATE(pg.tanggal_pengeluaran) >= ?")
+            pengeluaranReplacements.push(startDate)
         } else if (endDate) {
-            filters.push('DATE(p.tanggal_bayar) <= ?')
-            replacements.push(endDate)
+            pembayaranFilters.push("DATE(p.tanggal_bayar) <= ?")
+            pembayaranReplacements.push(endDate)
+            pengeluaranFilters.push("DATE(pg.tanggal_pengeluaran) <= ?")
+            pengeluaranReplacements.push(endDate)
         }
 
-        const sqlWhere = filters.length > 0 ? ' WHERE ' + filters.join(' AND ') : ''
-        const sqlQuery = sqlSelect + sqlFrom + sqlWhere + sqlOrder + sqlLimit + sqlOffset
+        const pembayaranWhere =
+            pembayaranFilters.length > 0 ? ` WHERE ${pembayaranFilters.join(" AND ")}` : ""
+        const pengeluaranWhere =
+            pengeluaranFilters.length > 0 ? ` WHERE ${pengeluaranFilters.join(" AND ")}` : ""
+
+        const sqlQuery = `
+            SELECT * FROM (
+                SELECT 
+                    p.id,
+                    "Uang Masuk" AS tipe,
+                    p.id_tagihan,
+                    p.tanggal_bayar AS tanggal_transaksi,
+                    p.total_bayar AS jumlah,
+                    CONCAT("Pembayaran Tagihan ", p.id_tagihan) AS nama_transaksi,
+                    p.id_metode_bayar,
+                    mb.nama AS nama_metode_bayar,
+                    dt.id AS id_deskripsi_tagihan,
+                    dt.nama AS nama_deskripsi_tagihan,
+                    s.id_kamar,
+                    k.nama AS nama_kamar,
+                    pi.id AS id_properti,
+                    pi.nama AS nama_properti,
+                    s.id_penyewa,
+                    pe.nama AS nama_penyewa
+                FROM pembayaran p
+                JOIN tagihan t ON p.id_tagihan = t.id
+                JOIN deskripsi_tagihan dt ON t.id_deskripsi_tagihan = dt.id
+                JOIN sewa s ON t.id_sewa = s.id
+                JOIN kamar k ON s.id_kamar = k.id
+                JOIN properti pi ON k.id_properti = pi.id
+                JOIN penyewa pe ON s.id_penyewa = pe.id
+                JOIN metode_bayar mb ON p.id_metode_bayar = mb.id
+                ${pembayaranWhere}
+
+                UNION ALL
+
+                SELECT
+                    pg.id,
+                    "Uang Keluar" AS tipe,
+                    NULL AS id_tagihan,
+                    pg.tanggal_pengeluaran AS tanggal_transaksi,
+                    pg.total AS jumlah,
+                    pg.nama AS nama_transaksi,
+                    NULL AS id_metode_bayar,
+                    NULL AS nama_metode_bayar,
+                    kp.id AS id_deskripsi_tagihan,
+                    kp.nama AS nama_deskripsi_tagihan,
+                    pg.id_kamar,
+                    k.nama AS nama_kamar,
+                    pg.id_properti,
+                    pr.nama AS nama_properti,
+                    NULL AS id_penyewa,
+                    NULL AS nama_penyewa
+                FROM pengeluaran pg
+                LEFT JOIN kategori_pengeluaran kp ON pg.id_kategori_pengeluaran = kp.id
+                LEFT JOIN kamar k ON pg.id_kamar = k.id
+                LEFT JOIN properti pr ON pg.id_properti = pr.id
+                ${pengeluaranWhere}
+            ) arus_kas
+            ORDER BY arus_kas.tanggal_transaksi DESC
+            LIMIT ? OFFSET ?
+        `
 
         // ======================
         // QUERY DATA
         // ======================
         const result = await database.query(sqlQuery, {
-            replacements: [...replacements, limit, offset],
+            replacements: [...pembayaranReplacements, ...pengeluaranReplacements, limit, offset],
             type: QueryTypes.SELECT
         })
 
@@ -86,10 +112,11 @@ export const get = async (req) => {
         // ======================
         const formattedData = result.map(item => ({
             id: item.id,
-            tipe: 'Uang Masuk',
+            tipe: item.tipe,
+            nama: item.nama_transaksi,
             idTagihan: item.id_tagihan,
-            tanggalBayar: item.tanggal_bayar,
-            totalBayar: item.total_bayar,
+            tanggalBayar: item.tanggal_transaksi,
+            totalBayar: item.jumlah,
             deskripsiTagihan: {
                 id: item.id_deskripsi_tagihan,
                 nama: item.nama_deskripsi_tagihan
@@ -116,12 +143,20 @@ export const get = async (req) => {
         // HITUNG TOTAL ROW
         // ======================
         const sqlCount = `
-            SELECT COUNT(*) AS totalRowCount
-            ${sqlFrom}
-            ${sqlWhere}
+            SELECT (
+                (SELECT COUNT(*) FROM pembayaran p
+                    JOIN tagihan t ON p.id_tagihan = t.id
+                    JOIN sewa s ON t.id_sewa = s.id
+                    ${pembayaranWhere}
+                )
+                +
+                (SELECT COUNT(*) FROM pengeluaran pg
+                    ${pengeluaranWhere}
+                )
+            ) AS totalRowCount
         `
         const countResult = await database.query(sqlCount, {
-            replacements,
+            replacements: [...pembayaranReplacements, ...pengeluaranReplacements],
             type: QueryTypes.SELECT
         })
         const totalRowCount = countResult[0].totalRowCount

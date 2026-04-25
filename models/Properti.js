@@ -160,15 +160,15 @@ export const get = async (req) => {
                     END AS status_sewa_terbaru
                 FROM KOS.kamar k
                 LEFT JOIN (
-                    SELECT s1.id_kamar, s1.tanggal_masuk, s1.id_status_sewa
+                    SELECT s1.id_kamar, s1.tanggal_dibuat, s1.id_status_sewa
                     FROM KOS.sewa s1
                     JOIN (
-                        SELECT id_kamar, MAX(tanggal_masuk) AS max_masuk
+                        SELECT id_kamar, MAX(tanggal_dibuat) AS max_dibuat
                         FROM KOS.sewa
                         GROUP BY id_kamar
                     ) s2 
                     ON s1.id_kamar = s2.id_kamar 
-                    AND s1.tanggal_masuk = s2.max_masuk
+                    AND s1.tanggal_dibuat = s2.max_dibuat
                 ) s ON k.id = s.id_kamar
                 LEFT JOIN KOS.status_sewa ss ON s.id_status_sewa = ss.id
                 WHERE k.id_properti IN (?)
@@ -329,15 +329,15 @@ export const show = async (id) => {
             FROM KOS.kamar k
 
             LEFT JOIN (
-                SELECT s1.*
+                SELECT s1.id_kamar, s1.tanggal_dibuat, s1.id_status_sewa
                 FROM KOS.sewa s1
                 JOIN (
-                    SELECT id_kamar, MAX(tanggal_masuk) AS max_masuk
+                    SELECT id_kamar, MAX(tanggal_dibuat) AS max_dibuat
                     FROM KOS.sewa
                     GROUP BY id_kamar
                 ) s2 
                 ON s1.id_kamar = s2.id_kamar 
-                AND s1.tanggal_masuk = s2.max_masuk
+                AND s1.tanggal_dibuat = s2.max_dibuat
             ) s ON k.id = s.id_kamar
 
             LEFT JOIN KOS.status_sewa ss ON s.id_status_sewa = ss.id
