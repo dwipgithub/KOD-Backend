@@ -30,6 +30,7 @@ import { getKategoriPengeluaran } from '../controllers/KategoriPengeluaranContro
 import { pengeluaranBuktiUpload } from '../middleware/uploadPengeluaranBukti.js'
 import { getLaporanArusKas } from '../controllers/LaporanArusKasController.js'
 import { getLaporanLabaRugi } from '../controllers/LaporanLabaRugiController.js'
+import { getLaporanBukuBesar } from '../controllers/LaporanBukuBesarController.js'
 
 const router = express.Router()
 
@@ -125,5 +126,6 @@ router.post('/api/v1/pengeluaran', verifyToken, pengeluaranBuktiUpload, createPe
 // Laporan
 router.get('/api/v1/laporan/arus-kas', verifyToken, getLaporanArusKas)
 router.get('/api/v1/laporan/laba-rugi', verifyToken, getLaporanLabaRugi)
+router.get('/api/v1/laporan/buku-besar', verifyToken, getLaporanBukuBesar)
 
 export default router
