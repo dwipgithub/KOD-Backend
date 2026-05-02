@@ -28,9 +28,11 @@ import { createKeluar } from '../controllers/KeluarController.js'
 import { createPengeluaran, getPengeluaran, showPengeluaran } from '../controllers/PengeluaranController.js'
 import { getKategoriPengeluaran } from '../controllers/KategoriPengeluaranController.js'
 import { pengeluaranBuktiUpload } from '../middleware/uploadPengeluaranBukti.js'
-import { getLaporanArusKas } from '../controllers/LaporanArusKasController.js'
-import { getLaporanLabaRugi } from '../controllers/LaporanLabaRugiController.js'
-import { getLaporanBukuBesar } from '../controllers/LaporanBukuBesarController.js'
+import { getLaporanArusKas, exportPdfArusKas } from '../controllers/LaporanArusKasController.js'
+import { getLaporanLabaRugi, exportPdfLabaRugi } from '../controllers/LaporanLabaRugiController.js'
+import { getLaporanBukuBesar, exportPdfBukuBesar } from '../controllers/LaporanBukuBesarController.js'
+import { getLaporanTagihan } from '../controllers/LaporanTagihanController.js'
+import { getLaporanPiutang, exportPdfPiutang } from '../controllers/LaporanPiutangController.js'
 
 const router = express.Router()
 
@@ -124,8 +126,14 @@ router.get('/api/v1/pengeluaran/:id', verifyToken, showPengeluaran)
 router.post('/api/v1/pengeluaran', verifyToken, pengeluaranBuktiUpload, createPengeluaran)
 
 // Laporan
+router.get('/api/v1/laporan/arus-kas/export/pdf', verifyToken, exportPdfArusKas)
 router.get('/api/v1/laporan/arus-kas', verifyToken, getLaporanArusKas)
+router.get('/api/v1/laporan/laba-rugi/export/pdf', verifyToken, exportPdfLabaRugi)
 router.get('/api/v1/laporan/laba-rugi', verifyToken, getLaporanLabaRugi)
+router.get('/api/v1/laporan/buku-besar/export/pdf', verifyToken, exportPdfBukuBesar)
 router.get('/api/v1/laporan/buku-besar', verifyToken, getLaporanBukuBesar)
+router.get('/api/v1/laporan/tagihan', verifyToken, getLaporanTagihan)
+router.get('/api/v1/laporan/piutang', verifyToken, getLaporanPiutang)
+router.get('/api/v1/laporan/piutang/export/pdf', verifyToken, exportPdfPiutang)
 
 export default router

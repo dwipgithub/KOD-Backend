@@ -7,17 +7,12 @@ export const get = async (req) => {
         const limit = parseInt(req.query.limit) > 100 ? 100 : parseInt(req.query.limit) || 100
         const offset = (page - 1) * limit
 
-        const { id_tagihan, startDate, endDate } = req.query
+        const { startDate, endDate, idProperti } = req.query
 
         const pembayaranFilters = []
         const pembayaranReplacements = []
         const pengeluaranFilters = []
         const pengeluaranReplacements = []
-
-        if (id_tagihan) {
-            pembayaranFilters.push("p.id_tagihan = ?")
-            pembayaranReplacements.push(id_tagihan)
-        }
 
         if (startDate && endDate) {
             pembayaranFilters.push("DATE(p.tanggal_bayar) BETWEEN ? AND ?")
@@ -34,6 +29,13 @@ export const get = async (req) => {
             pembayaranReplacements.push(endDate)
             pengeluaranFilters.push("DATE(pg.tanggal_pengeluaran) <= ?")
             pengeluaranReplacements.push(endDate)
+        }
+
+        if (idProperti) {
+            pembayaranFilters.push("pi.id = ?")
+            pembayaranReplacements.push(idProperti)
+            pengeluaranFilters.push("pr.id = ?")
+            pengeluaranReplacements.push(idProperti)
         }
 
         const pembayaranWhere =
@@ -147,10 +149,13 @@ export const get = async (req) => {
                 (SELECT COUNT(*) FROM pembayaran p
                     JOIN tagihan t ON p.id_tagihan = t.id
                     JOIN sewa s ON t.id_sewa = s.id
+                    JOIN kamar k ON s.id_kamar = k.id
+                    JOIN properti pi ON k.id_properti = pi.id
                     ${pembayaranWhere}
                 )
                 +
                 (SELECT COUNT(*) FROM pengeluaran pg
+                    JOIN properti pr ON pg.id_properti = pr.id
                     ${pengeluaranWhere}
                 )
             ) AS totalRowCount

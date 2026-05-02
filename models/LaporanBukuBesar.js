@@ -73,6 +73,7 @@ export const get = async (req) => {
                 FROM pengeluaran pg
                 LEFT JOIN kategori_pengeluaran kp 
                     ON pg.id_kategori_pengeluaran = kp.id
+                WHERE kp.id_akun IS NOT NULL
 
             ) t
             WHERE DATE(tanggal_transaksi) < ?
@@ -140,6 +141,7 @@ export const get = async (req) => {
                     ON pg.id_kategori_pengeluaran = kp.id
                 LEFT JOIN akun a 
                     ON kp.id_akun = a.id
+                WHERE kp.id_akun IS NOT NULL
 
             ) transaksi
             ${whereClause}
@@ -157,6 +159,8 @@ export const get = async (req) => {
         const grouped = {}
 
         for (const item of rows) {
+            if (!item.nama_akun) continue; // Skip if no account name
+            
             if (!grouped[item.id_akun]) {
                 grouped[item.id_akun] = {
                     akun: {
@@ -178,6 +182,7 @@ export const get = async (req) => {
 
             group.transaksi.push({
                 tanggal: item.tanggal_transaksi,
+                tanggal_transaksi: item.tanggal_transaksi,
                 keterangan: item.keterangan,
                 kategori: {
                     nama: item.kategori,
