@@ -1,56 +1,60 @@
 import axios from "axios"
+import dotenv from "dotenv"
+import { getRandomTemplate } from "../templates/whatsappTemplates.js"
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-export const sendWhatsapp = async (target, message) => {
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+dotenv.config({
+    path: path.join(__dirname, '../.env')
+})
+
+// ======================
+// FUNCTION KIRIM WA
+// ======================
+export const sendWhatsapp = async ({
+    target,
+    nama,
+    jatuhTempo,
+    countryCode = "62"
+}) => {
+
+    const message = getRandomTemplate({ nama, jatuhTempo })
+
     try {
-
         const response = await axios.post(
-            "https://api.fonnte.com/send",
-
+            process.env.WHATSAPP_URL,
             new URLSearchParams({
-                target: target,
-                message: message,
-                countryCode: "62"
+                target,
+                message,
+                countryCode
             }),
-
             {
                 headers: {
-                    Authorization: process.env.FONNTE_TOKEN,
+                    Authorization: process.env.WHATSAPP_TOKEN,
                     "Content-Type": "application/x-www-form-urlencoded"
                 }
             }
         )
 
-        console.log("WhatsApp sent:", response.data)
+        console.log("=== TEMPLATE DIPAKAI ===")
+        console.log(message)
+        console.log("========================")
 
-        return {
-            success: true,
-            data: response.data
-        }
+        console.log("=== RESPONSE ===")
+        console.log(response.data)
+
+        return response.data
 
     } catch (error) {
-
         if (error.response) {
-
-            console.error(
-                "WhatsApp API Error:",
-                error.response.data
-            )
-
-            return {
-                success: false,
-                error: error.response.data
-            }
-
-        }
-
-        console.error(
-            "WhatsApp Request Error:",
-            error.message
-        )
-
-        return {
-            success: false,
-            error: error.message
+            console.error("API Error:", error.response.data)
+            return error.response.data
+        } else {
+            console.error("Request Error:", error.message)
+            return error.message
         }
     }
 }

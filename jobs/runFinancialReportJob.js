@@ -1,8 +1,9 @@
 import { get as getArusKas } from '../models/LaporanArusKas.js'
 import { get as getLabaRugi } from '../models/LaporanLabaRugi.js'
 import { get as getBukuBesar } from '../models/LaporanBukuBesar.js'
+import { get as getPiutang } from '../models/LaporanPiutang.js'
 import { get as getProperti } from '../models/Properti.js'
-import { generatePdfArusKas, generatePdfLabaRugi, generatePdfBukuBesar } from '../helpers/generatePDF.js'
+import { generatePdfArusKas, generatePdfLabaRugi, generatePdfBukuBesar, generatePdfPiutang } from '../helpers/generatePDF.js'
 import { sendEmail } from '../services/emailService.js'
 import dotenv from 'dotenv'
 import path from 'path'
@@ -50,6 +51,7 @@ const createEmailBody = (propertyName, periodText) => {
                 <li>Laporan Arus Kas</li>
                 <li>Laporan Laba Rugi</li>
                 <li>Laporan Buku Besar</li>
+                <li>Laporan Piutang</li>
             </ul>
             <p>Silakan buka lampiran untuk melihat detail laporan per properti.</p>
         </div>
@@ -131,6 +133,21 @@ export const runFinancialReportJob = async () => {
                     namaProperti: propertyName
                 })
 
+                const piutangReq = {
+                    query: {
+                        startDate,
+                        endDate,
+                        idProperti: propertyId
+                    }
+                }
+                const piutangResult = await getPiutang(piutangReq)
+                const piutangBuffer = await generatePdfPiutang(piutangResult, {
+                    startDate,
+                    endDate,
+                    idProperti: propertyId,
+                    namaProperti: propertyName
+                })
+
                 const safePropertyName = sanitizeFileName(propertyName)
                 const attachments = [
                     {
@@ -146,6 +163,11 @@ export const runFinancialReportJob = async () => {
                     {
                         filename: `Laporan-Buku-Besar-${safePropertyName}.pdf`,
                         content: bukuBesarBuffer,
+                        contentType: 'application/pdf'
+                    },
+                    {
+                        filename: `Laporan-Piutang-${safePropertyName}.pdf`,
+                        content: piutangBuffer,
                         contentType: 'application/pdf'
                     }
                 ]

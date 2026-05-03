@@ -56,6 +56,10 @@ export const get = async (req) => {
             t.tanggal_jatuh_tempo,
             t.total,
             t.id_status_tagihan,
+            p.id as id_penyewa,
+            p.nama as nama_penyewa,
+            p.no_telp as no_telp_penyewa,
+            p.email as email_penyewa,
             st.nama AS status_tagihan_nama
         `
 
@@ -110,6 +114,12 @@ export const get = async (req) => {
 
         const formattedData = rows.map(item => ({
             id: item.id,
+            penyewa: {
+                id: item.id_penyewa,
+                nama: item.nama_penyewa,
+                noTelp: item.no_telp_penyewa,
+                email: item.email_penyewa
+            },
             sewa: {
                 id: item.id_sewa,
                 tanggalMasuk: item.tanggal_masuk,
