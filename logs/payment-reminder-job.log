@@ -2,133 +2,53 @@
 🚀 Menjalankan Payment Reminder Job
 📂 Directory: /Users/dp/Documents/Project/Kos/Backend
 🟢 Node: /usr/local/bin/node
-⏰ Waktu: Sun May  3 12:48:00 WIB 2026
+⏰ Waktu: Mon May  4 08:17:07 WIB 2026
 ===================================
 🚀 Memulai job reminder WhatsApp tagihan...
-(node:63883) [SEQUELIZE0002] DeprecationWarning: The logging-option should be either a function or false. Default: console.log
-(Use `node --trace-deprecation ...` to show where the warning was created)
-Executing (default): SELECT 
-            t.id,
-            t.id_sewa,
-            s.tanggal_masuk,
-            s.tanggal_keluar,
-            t.id_deskripsi_tagihan,
-            t.tanggal_tagihan,
-            t.tanggal_jatuh_tempo,
-            t.total,
-            t.id_status_tagihan,
-            p.id as id_penyewa,
-            p.nama as nama_penyewa,
-            p.no_telp as no_telp_penyewa,
-            p.email as email_penyewa,
-            st.nama AS status_tagihan_nama
-        
-            FROM tagihan t
-            JOIN sewa s ON t.id_sewa = s.id
-            JOIN kamar k ON s.id_kamar = k.id
-            JOIN penyewa p ON s.id_penyewa = p.id
-            JOIN status_tagihan st ON t.id_status_tagihan = st.id
-         WHERE t.id_status_tagihan = 'UNPAID' 
-            ORDER BY 
-            CASE
-                WHEN t.id_deskripsi_tagihan = 'DP' THEN 1
-                WHEN t.id_deskripsi_tagihan = 'RENT' THEN 2
-                ELSE 99
-            END,
-            t.tanggal_jatuh_tempo ASC
-         LIMIT 100 OFFSET 0
-Executing (default): SELECT COUNT(t.id) AS total_row_count
-            FROM tagihan t
-            JOIN sewa s ON t.id_sewa = s.id
-            JOIN kamar k ON s.id_kamar = k.id
-            JOIN penyewa p ON s.id_penyewa = p.id
-            JOIN status_tagihan st ON t.id_status_tagihan = st.id
-             WHERE t.id_status_tagihan = 'UNPAID'
-🧾 Tagihan UNPAID ditemukan: 4
-📅 Tagihan jatuh tempo hari ini (2026-05-03): 4
+🧾 Tagihan UNPAID ditemukan: 6
+📅 Tagihan jatuh tempo hari ini (2026-05-04): 2
 📲 Mengirim WA ke Dwi Prihantono (87885855652) — 2 tagihan
 === TEMPLATE DIPAKAI ===
-Hai Dwi Prihantono,
+Halo Dwi Prihantono,
 
-Sekadar mengingatkan bahwa tagihan sewa kos Anda akan jatuh tempo pada 2026-05-03.
+Pengingat sederhana 😊  
+Tagihan sewa kos Anda jatuh tempo pada 2026-05-04.
 
-Mohon segera ditindaklanjuti ya 🙏
+Mohon segera diselesaikan.
 ========================
 === RESPONSE ===
 {
   detail: 'success! message in queue',
-  id: [ 154682194 ],
+  id: [ 154774222 ],
   process: 'pending',
   quota: {
     '08211535458': {
       details: 'deduced from total quota',
-      quota: 974,
-      remaining: 973,
+      quota: 972,
+      remaining: 971,
       used: 1
     }
   },
-  requestid: 469907981,
+  requestid: 470725646,
   status: true,
   target: [ '6287885855652' ]
 }
    Response WA: {
   detail: 'success! message in queue',
-  id: [ 154682194 ],
+  id: [ 154774222 ],
   process: 'pending',
   quota: {
     '08211535458': {
       details: 'deduced from total quota',
-      quota: 974,
-      remaining: 973,
+      quota: 972,
+      remaining: 971,
       used: 1
     }
   },
-  requestid: 469907981,
+  requestid: 470725646,
   status: true,
   target: [ '6287885855652' ]
 }
-⏳ Menunggu 3 menit sebelum pengiriman berikutnya...
-📲 Mengirim WA ke Ina Yulianti (85962375888) — 2 tagihan
-=== TEMPLATE DIPAKAI ===
-Hai Ina Yulianti,
-
-Kami mengingatkan bahwa tagihan sewa kos Anda jatuh tempo pada 2026-05-03.
-
-Mohon bantuannya untuk segera melakukan pembayaran ya.
-========================
-=== RESPONSE ===
-{
-  detail: 'success! message in queue',
-  id: [ 154682456 ],
-  process: 'pending',
-  quota: {
-    '08211535458': {
-      details: 'deduced from total quota',
-      quota: 973,
-      remaining: 972,
-      used: 1
-    }
-  },
-  requestid: 469910598,
-  status: true,
-  target: [ '6285962375888' ]
-}
-   Response WA: {
-  detail: 'success! message in queue',
-  id: [ 154682456 ],
-  process: 'pending',
-  quota: {
-    '08211535458': {
-      details: 'deduced from total quota',
-      quota: 973,
-      remaining: 972,
-      used: 1
-    }
-  },
-  requestid: 469910598,
-  status: true,
-  target: [ '6285962375888' ]
-}
-✅ Job selesai. Pesan terkirim: 2, skip: 0
+✅ Job selesai. Pesan terkirim: 1, skip: 0
 ✅ Job berhasil
 
